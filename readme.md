@@ -1,4 +1,4 @@
-# Acceso al Sistema - Cosmos Owner
+# Acceso al Sistema - Geek Owner
 
 ### Owner
 | Campo | Valor |
