@@ -72,18 +72,28 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto px-4 py-2 custom-scrollbar flex flex-col gap-6">
-                <a id="link-dashboard"
-                    class="nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-all"
-                    href="#" onclick="event.preventDefault(); dashboardController.inicializar()">
-                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
-                    <p class="text-sm font-medium sidebar-hide">Dashboard</p>
-                </a>
-                <a id="link-pedidos"
-                    class="nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-all"
-                    href="#" onclick="event.preventDefault(); pedidoController.inicializar()">
-                    <span class="material-symbols-outlined text-[20px]">receipt_long</span>
-                    <p class="text-sm font-medium sidebar-hide">Pedidos</p>
-                </a>
+                <div class="flex flex-col gap-1">
+                    <a id="link-dashboard"
+                        class="nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                        href="#" onclick="event.preventDefault(); dashboardController.inicializar()">
+                        <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                        <p class="text-sm font-medium sidebar-hide">Dashboard</p>
+                    </a>
+
+                    <a id="link-pedidos"
+                        class="nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-all"
+                        href="#" onclick="event.preventDefault(); pedidoController.inicializar()">
+                        <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                        <p class="text-sm font-medium sidebar-hide">Pedidos</p>
+                    </a>
+
+                    <a id="link-empresas"
+                        class="nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-500 hover:bg-violet-50 hover:text-violet-600 transition-all"
+                        href="#" onclick="event.preventDefault(); empresaController.inicializar()">
+                        <span class="material-symbols-outlined text-[20px]">business</span>
+                        <p class="text-sm font-medium sidebar-hide">Empresas</p>
+                    </a>
+                </div>
                 <div class="flex flex-col gap-1">
                     <p class="px-3 text-[11px] font-bold text-blue-600/70 uppercase tracking-wider mb-2 sidebar-hide">
                         Inventario</p>

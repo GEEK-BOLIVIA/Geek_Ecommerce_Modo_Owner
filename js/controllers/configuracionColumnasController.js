@@ -14,6 +14,7 @@ export const configuracionColumnasController = {
         usuarios_cliente: ['nro', 'perfil', 'nombre', 'ci', 'telefono', 'acciones'],
         sucursales: ['nro', 'sucursal', 'direccion', 'productos', 'acciones'],
         departamentos: ['nro', 'departamento', 'acciones'],
+        empresas: ['nro', 'logo', 'nombre', 'acciones'], // <-- ESQUEMA REGISTRADO
         direcciones: ['nro', 'cliente', 'etiqueta', 'direccion', 'referencia', 'mapa', 'acciones'],
         descuentos: ['nro', 'nombre', 'valor', 'alcance', 'vigencia', 'estado', 'acciones'],
         combos: ['nro', 'nombre', 'precio_descuento', 'alcance', 'vigencia', 'estado', 'acciones'],
@@ -72,7 +73,7 @@ export const configuracionColumnasController = {
                     rolSeleccionado = await configuracionColumnasView.solicitarSeleccionRol(roles);
                     if (!rolSeleccionado) return;
                     paso = 2;
-                    continue; // Salta al siguiente ciclo del while
+                    continue;
                 }
 
                 // --- PASO 2: SELECCIONAR USUARIO ---
@@ -112,10 +113,8 @@ export const configuracionColumnasController = {
                     const actuales = await configuracionColumnasModel.obtenerConfiguracion(tablaNombre, uId, rId);
                     Swal.close();
 
-                    // Determinamos qué columnas marcar (las guardadas o todas por defecto)
                     const columnasAMarcar = actuales && actuales.length > 0 ? actuales : todasLasColumnas;
 
-                    // ÚNICA LLAMADA: Aquí estaba el error (estaba duplicado en tu código)
                     seleccionadas = await configuracionColumnasView.solicitarConfiguracionColumnas(
                         todasLasColumnas,
                         columnasAMarcar,
@@ -157,7 +156,7 @@ export const configuracionColumnasController = {
                         this.invalidarCache(tablaNombre);
                         configuracionColumnasView.notificarExito('Configuración guardada correctamente');
                         if (callbackRecargar) callbackRecargar();
-                        break; // Finaliza el flujo
+                        break;
                     } else {
                         configuracionColumnasView.notificarError(res.mensaje);
                         paso = 3;

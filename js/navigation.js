@@ -11,6 +11,9 @@ import { comboController } from './controllers/comboController.js';
 import { dashboardController } from './controllers/dashboardController.js';
 import { metodoPagoController } from './controllers/metodoPagoController.js';
 
+// 1. IMPORTAR EL CONTROLADOR DE EMPRESAS
+import { empresaController } from './controllers/empresaController.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 0. PROTECCIÓN DE RUTAS Y SESIÓN ---
@@ -20,14 +23,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Caso A: No hay nadie logueado
         if (!sesion) {
             console.log("No hay sesión activa. Al login.");
-            window.location.href = './index.html'; // CORREGIDO: ./ asegura que sea dentro de /comercio/
+            window.location.href = './index.html'; 
             return null;
         }
 
         // Caso B: Está logueado pero NO existe en la tabla 'usuario'
         if (!sesion.perfil) {
             console.warn("Sesión detectada pero perfil inexistente en DB.");
-            window.location.href = './registrar-usuario.html'; // CORREGIDO
+            window.location.href = './registrar-usuario.html'; 
             return null;
         }
 
@@ -35,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (sesion.perfil.rol.toLowerCase() !== 'owner') {
             console.error("Acceso denegado: El rol no es Owner.");
             const logoutData = await usuarioModel.logout();
-            window.location.href = logoutData.urlRedireccion; // CORREGIDO: Usamos la URL del modelo
+            window.location.href = logoutData.urlRedireccion; 
             return null;
         }
 
@@ -45,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (estaIncompleto) {
             console.warn("Perfil incompleto detectado.");
-            window.location.href = './registrar-usuario.html'; // CORREGIDO
+            window.location.href = './registrar-usuario.html'; 
             return null;
         }
 
@@ -56,7 +59,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!sesionActiva) return; // Detiene la ejecución si no está autorizado
 
     // --- 0.1 CARGAR DATOS DEL USUARIO EN LA UI ---
-    // --- CARGAR DATOS DEL USUARIO EN LA UI ---
     const perfil = sesionActiva.perfil;
     const userNameDisplay = document.querySelector('.sidebar-hide p.text-slate-800.text-sm.font-bold');
     const userRoleDisplay = document.querySelector('.sidebar-hide p.text-slate-500.text-\\[11px\\]');
@@ -66,7 +68,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (userRoleDisplay) userRoleDisplay.textContent = perfil.rol.charAt(0).toUpperCase() + perfil.rol.slice(1);
     if (userAvatarImg) {
         userAvatarImg.src = `https://ui-avatars.com/api/?name=${perfil.nombres}+${perfil.apellido_paterno}&background=3b82f6&color=fff`;
-        // Añadimos una clase al contenedor del avatar para el CSS
         userAvatarImg.parentElement.classList.add('avatar-container');
     }
 
@@ -79,22 +80,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error("Error al cargar dashboard inicial:", error);
     }
+    
     const mapeoRolesUsuarios = {
         'link-owners': 'owner',
         'link-admins': 'admin',
         'link-supervisores': 'supervisor',
         'link-clientes': 'cliente'
     };
+
     // Modificamos la función cargarSeccion o el listener de clics
     async function ejecutarControladorSegunID(idElemento) {
         const controlador = mapeoControladores[idElemento];
         if (controlador) {
-            // Esperamos un momento a que el HTML se cargue en el DOM si usas AJAX
             setTimeout(async () => {
                 await controlador.inicializar();
             }, 100);
         }
     }
+
     // --- 0.3 LÓGICA DE LOGOUT ---
     const btnLogout = document.querySelector('button[title="Cerrar Sesión"]');
     if (btnLogout) {
@@ -111,20 +114,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (result.isConfirmed) {
-                // Obtenemos la URL calculada dinámicamente por el modelo para GH Pages
                 const logoutData = await usuarioModel.logout();
-
-                // Redirigimos a la URL que el modelo nos entregue (que ya incluye /comercio/index.html)
                 window.location.href = logoutData.urlRedireccion;
             }
         });
     }
+
     // --- EXPOSICIÓN GLOBAL PARA EVENTOS ONCLICK ---
     window.categoriasController = categoriasController;
     window.productoController = productoController;
     window.importacionController = importacionController;
     window.descuentoController = descuentoController;
     window.metodoPagoController = metodoPagoController;
+    
+    // 2. EXPOSITOR GLOBAL PARA EL CONTROLADOR DE EMPRESAS (DENTRO DEL DOMCONTENTLOADED)
+    window.empresaController = empresaController;
 
     const navItems = document.querySelectorAll('.nav-item');
     const contentArea = document.getElementById('content-area');
@@ -141,33 +145,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             .animate-fade-in { animation: fadeIn 0.3s ease-out; }
             @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-            /* Evita que el avatar se corte al colapsar */
             .sidebar-colapsado .profile-wrapper { 
                 justify-content: center !important; 
                 padding: 0 !important; 
                 border: none !important; 
                 background: transparent !important; 
                 box-shadow: none !important;
-                overflow: visible !important; /* Crucial para que no se corte */
+                overflow: visible !important; 
             }
             .sidebar-colapsado .logout-btn { justify-content: center !important; padding: 0.5rem 0 !important; }
             .sidebar-colapsado .avatar-container { margin: 0 auto !important; display: flex; justify-content: center; }
-            
-            /* Asegura que el avatar mantenga su tamaño circular */
             .avatar-container img { min-width: 40px; min-height: 40px; }
         `;
         document.head.appendChild(style);
     };
     inyectarEstilosGlobales();
 
-    // --- LÓGICA DE UI: SIDEBAR (Corregida para alineación) ---
+    // --- LÓGICA DE UI: SIDEBAR ---
     window.sidebarController = {
         toggle() {
             const sidebar = document.getElementById('main-sidebar');
             const icon = document.getElementById('sidebar-icon');
             const logoImg = document.getElementById('sidebar-logo');
 
-            // Intentamos capturar los contenedores de perfil y logout para alinearlos
             const profileWrapper = sidebar.querySelector('.flex.items-center.bg-white.rounded-xl') || sidebar.querySelector('aside .p-4 div:has(img)');
             const logoutBtn = document.querySelector('button[title="Cerrar Sesión"]');
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (isColapsed) {
                 sidebar.classList.remove('w-[280px]');
-                sidebar.classList.add('sidebar-colapsado'); // Clase de control para CSS
+                sidebar.classList.add('sidebar-colapsado'); 
                 icon.innerText = 'chevron_right';
 
                 if (logoImg) {
@@ -238,14 +238,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const item = e.target.closest('.nav-item, [id^="link-"], button, summary');
         if (!item) return;
 
-        // Ejecutamos la limpieza visual
         actualizarEstadoActivo(item);
     });
 
     // --- NAVEGACIÓN UNIFICADA ---
     navItems.forEach(item => {
         item.addEventListener('click', async (e) => {
-            // Evitamos que el clic en elementos internos del botón interfiera
             e.preventDefault();
 
             const id = item.id;
@@ -255,14 +253,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Caso A: Es una sección de Usuarios (Owner, Admin, Cliente)
             if (rolParaCargar) {
                 actualizarEstadoActivo(item);
-                // El controlador ya sabe que debe limpiar el contentArea y dibujar la tabla
                 await usuarioController.inicializarSeccion(rolParaCargar);
             }
-            // Caso B: Son secciones de Inventario (Productos, Categorías)
-            else if (id === 'link-productos' || id === 'link-categorias') {
+            // Caso B: Son secciones de Inventario (Productos, Categorías) o Empresas
+            else if (id === 'link-productos' || id === 'link-categorias' || id === 'link-empresas') {
                 actualizarEstadoActivo(item);
                 if (id === 'link-productos') await productoController.inicializar();
                 if (id === 'link-categorias') await categoriasController.inicializar(categoriasView._estado.pestanaActiva);
+                
+                // 3. AGREGAR CONDICIÓN DE INICIALIZACIÓN PARA EL LINK DE EMPRESAS
+                if (id === 'link-empresas') await empresaController.inicializar();
             }
             else if (id === 'link-dashboard') {
                 actualizarEstadoActivo(item);
@@ -308,10 +308,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function actualizarEstadoActivo(elementoActivo) {
         if (!elementoActivo) return;
 
-        // Subir al summary si el click viene de un div/span/p interno
         const objetivo = elementoActivo.closest('summary') || elementoActivo;
 
-        // Limpiar todos los summaries y nav-items del sidebar
         document.querySelectorAll('#main-sidebar summary, #main-sidebar .nav-item').forEach(el => {
             el.classList.remove(
                 'bg-blue-50', 'text-blue-600',
@@ -351,8 +349,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (p) p.classList.add('font-bold');
     }
 
-    // Exponer para sincronización externa (ej: tabs de categorías)
     window.actualizarEstadoActivo = actualizarEstadoActivo;
 });
+
+// 2.1 ADICIONAR EXPOSICIÓN GLOBAL COMPLEMENTARIA (AL FINAL DEL ARCHIVO)
+window.empresaController = empresaController;
 window.usuarioController = usuarioController;
 window.dashboardController = dashboardController;
