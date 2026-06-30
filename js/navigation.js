@@ -11,8 +11,9 @@ import { comboController } from './controllers/comboController.js';
 import { dashboardController } from './controllers/dashboardController.js';
 import { metodoPagoController } from './controllers/metodoPagoController.js';
 
-// 1. IMPORTAR EL CONTROLADOR DE EMPRESAS
+// 1. IMPORTAR EL CONTROLADOR DE EMPRESAS Y EL DE MOSAICOS
 import { empresaController } from './controllers/empresaController.js';
+import { mosaicoController } from './controllers/mosaicoController.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -127,8 +128,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.descuentoController = descuentoController;
     window.metodoPagoController = metodoPagoController;
     
-    // 2. EXPOSITOR GLOBAL PARA EL CONTROLADOR DE EMPRESAS (DENTRO DEL DOMCONTENTLOADED)
+    // EXPOSITORES GLOBALES DENTRO DEL DOMCONTENTLOADED
     window.empresaController = empresaController;
+    window.mosaicoController = mosaicoController;
 
     const navItems = document.querySelectorAll('.nav-item');
     const contentArea = document.getElementById('content-area');
@@ -255,14 +257,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 actualizarEstadoActivo(item);
                 await usuarioController.inicializarSeccion(rolParaCargar);
             }
-            // Caso B: Son secciones de Inventario (Productos, Categorías) o Empresas
-            else if (id === 'link-productos' || id === 'link-categorias' || id === 'link-empresas') {
+            // Caso B: Son secciones de Inventario o Empresas / Mosaicos
+            else if (id === 'link-productos' || id === 'link-categorias' || id === 'link-empresas' || id === 'link-mosaicos') {
                 actualizarEstadoActivo(item);
                 if (id === 'link-productos') await productoController.inicializar();
                 if (id === 'link-categorias') await categoriasController.inicializar(categoriasView._estado.pestanaActiva);
-                
-                // 3. AGREGAR CONDICIÓN DE INICIALIZACIÓN PARA EL LINK DE EMPRESAS
                 if (id === 'link-empresas') await empresaController.inicializar();
+                
+                // CONDICIÓN DE INICIALIZACIÓN PARA EL LINK DE MOSAICOS
+                if (id === 'link-mosaicos') await mosaicoController.inicializar();
             }
             else if (id === 'link-dashboard') {
                 actualizarEstadoActivo(item);
@@ -352,7 +355,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.actualizarEstadoActivo = actualizarEstadoActivo;
 });
 
-// 2.1 ADICIONAR EXPOSICIÓN GLOBAL COMPLEMENTARIA (AL FINAL DEL ARCHIVO)
+// EXPOSICIÓN GLOBAL COMPLEMENTARIA (AL FINAL DEL ARCHIVO)
 window.empresaController = empresaController;
+window.mosaicoController = mosaicoController;
 window.usuarioController = usuarioController;
 window.dashboardController = dashboardController;
